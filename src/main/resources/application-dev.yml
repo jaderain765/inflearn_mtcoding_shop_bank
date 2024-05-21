@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8081
   servlet:
     encoding:
       charset: utf-8
@@ -7,7 +7,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:test;MODE=MySQL
+    url: jdbc:h2:mem:test;MODE=MySQL # 마이SQL이 마리아, H2 들이 전부 같은 문법을 사용한다.
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -29,4 +29,4 @@ spring:
 
 logging:
   level:
-    '[shop.mtcoding.bank]':DEBUG
+    '[shop.mtcoding.bank]': DEBUG

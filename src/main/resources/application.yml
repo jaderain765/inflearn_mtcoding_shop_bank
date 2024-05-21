@@ -5,3 +5,4 @@ spring:
   profiles:
     active:
      - dev
+# -(하이폰) 뒤의 이름으로 설정파일을 매핑해준다.
