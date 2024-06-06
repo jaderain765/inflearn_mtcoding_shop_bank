@@ -1,5 +1,6 @@
 package shap.mtcoding.bank.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.file.ConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import shap.mtcoding.bank.domain.user.UserEnum;
+import shap.mtcoding.bank.dto.ResponseDto;
+import shap.mtcoding.bank.util.CustomResponseUtil;
 
 @Configuration
 public class SecurityConfig {
@@ -25,12 +28,14 @@ public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
+        log.debug("디버그 : filterChain 빈 등록됨");
         return new BCryptPasswordEncoder();
     }
 
     // JWT 서버를 만들 예정이다. Session을 사용하지 않는다.
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.debug("디버그 : filterChain 빈 등록됨");
 
         http
                 // iframe 사용을 금지 (보안상의 이유로 차단한다.)
@@ -42,11 +47,20 @@ public class SecurityConfig {
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(configurationSource()))
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(Customizer.withDefaults())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+
+                // Exception 가로채기
+                .exceptionHandling(handle -> {
+                    handle.authenticationEntryPoint((request, response, authException) -> {
+                        CustomResponseUtil.unAuthentication(response, "로그인을 진행해 주시요.");
+                    });
+                })
+
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
                                 .requestMatchers(
-                                        AntPathRequestMatcher.antMatcher("/api/s")
+                                        AntPathRequestMatcher.antMatcher("/api/s/**")
                                 ).authenticated()
                                 .requestMatchers(
                                         AntPathRequestMatcher.antMatcher("/api/admin/**")
@@ -57,6 +71,7 @@ public class SecurityConfig {
     }
 
     public CorsConfigurationSource configurationSource(){
+        log.debug("디버그 : configurationSource cors 설정이 SecurityFilterChain에 등록됨");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*"); // GET, POST, PUT, DELETE (Javascript 요청 허용)

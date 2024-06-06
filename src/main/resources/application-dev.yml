@@ -29,4 +29,4 @@ spring:
 
 logging:
   level:
-    '[shop.mtcoding.bank]': DEBUG
+    '[shap.mtcoding.bank]': DEBUG

@@ -9,7 +9,8 @@ import shap.mtcoding.bank.dto.ResponseDto;
 public class CustomResponseUtil {
 
     private static final Logger log = LoggerFactory.getLogger(CustomResponseUtil.class);
-
+    // 401 : 인증이 되지 않은 경우
+    // 403 : 권한이 없는 경우
     public static void unAuthentication(HttpServletResponse response, String msg){
         try {
             ObjectMapper om = new ObjectMapper();
